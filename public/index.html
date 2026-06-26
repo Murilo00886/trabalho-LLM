@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professor de Programação AI</title>
+  <style>
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      max-width: 800px; 
+      margin: 40px auto; 
+      padding: 0 20px;
+      background-color: #f8fafc;
+      color: #334155;
+    }
+    h1 { color: #1e3a8a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+    p { font-size: 16px; line-height: 1.6; }
+    textarea { 
+      width: 100%; 
+      height: 120px; 
+      font-size: 16px; 
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+    button { 
+      background-color: #2563eb; 
+      color: white; 
+      padding: 12px 24px; 
+      font-size: 16px; 
+      font-weight: bold;
+      border: none; 
+      border-radius: 6px;
+      cursor: pointer; 
+      transition: background 0.2s;
+    }
+    button:hover { background-color: #1d4ed8; }
+    h2 { margin-top: 40px; color: #1e3a8a; }
+    pre { 
+      white-space: pre-wrap; 
+      background: #ffffff; 
+      padding: 20px; 
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      line-height: 1.6;
+      font-size: 15px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>👨‍💻 Professor de Programação - ADS</h1>
+  <p>Digite sua dúvida de código, lógica ou erro que está travando o seu projeto. O professor irá te explicar os conceitos e te passar um desafio!</p>
+  
+  <textarea id="prompt" placeholder="Ex: Professor, o que é uma função assíncrona no JavaScript e quando devo usar o await?"></textarea>
+  <br><br>
+  <button onclick="enviarDuvida()">Enviar Dúvida</button>
+  
+  <h2>Resposta do Professor</h2>
+  <pre id="resposta">Aguardando sua dúvida...</pre>
+
+  <script>
+    async function enviarDuvida() {
+      const promptInput = document.getElementById("prompt").value;
+      const output = document.getElementById("resposta");
+      
+      if(!promptInput.trim()) {
+        alert("Por favor, digite alguma dúvida antes de enviar!");
+        return;
+      }
+
+      output.textContent = "Pensando na melhor didática para te explicar...  Wait a moment.";
+      
+      try {
+        const response = await fetch("/api/llm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: promptInput })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          output.textContent = "Erro: " + (data.erro || "Falha desconhecida no servidor.");
+          return;
+        }
+        
+        output.textContent = data.resposta;
+      } catch (error) {
+        output.textContent = "Erro ao conectar com o servidor local. Garanta que o backend está rodando.";
+      }
+    }
+  </script>
+</body>
+</html>
